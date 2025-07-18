@@ -6,12 +6,12 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // ✅ loading flag
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setLoading(false); // ✅ only render children after auth is ready
     });
     return () => unsubscribe();
   }, []);
@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ user, logout }}>
-      {!loading && children}
+      {!loading && children} {/* ✅ block children until user is set */}
     </AuthContext.Provider>
   );
 };

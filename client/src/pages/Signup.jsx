@@ -2,6 +2,8 @@ import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { useNavigate, Link } from "react-router-dom";
+import { setDoc, doc } from "firebase/firestore";
+import { db } from "../firebase";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
@@ -20,7 +22,11 @@ const Signup = () => {
     }
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+     const user = userCredential.user;
+      await setDoc(doc(db, "users", user.uid), {
+        email: user.email,
+      });
       navigate("/dashboard");
     } catch (err) {
       setError("Signup failed. Try another email.");
